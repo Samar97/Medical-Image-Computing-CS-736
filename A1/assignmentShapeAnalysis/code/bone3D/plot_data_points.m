@@ -1,4 +1,4 @@
-function [] = plot_data_points(point_set_data, polygon_faces, num_point_sets, has_mean, mean_points, file_name, plot_title, random_color, to_save)
+function [] = plot_data_points(point_set_data, polygon_faces, num_point_sets, has_mean, mean_points, file_name, plot_title, random_color, to_save, results_folder)
 
 	f = figure();
 
@@ -22,10 +22,12 @@ function [] = plot_data_points(point_set_data, polygon_faces, num_point_sets, ha
 	end
 	hold off;
 	
-	% if to_save
-	% 	saveas(f, file_name);
-	% end
+	view(-145, 45)
 	
-	% close(f);
+	if to_save
+		saveas(f, strcat(results_folder, file_name));
+	end
+	
+	close(f);
 
 end 

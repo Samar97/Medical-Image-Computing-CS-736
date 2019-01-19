@@ -1,4 +1,4 @@
-function [] = plot_data_points(point_set_data, num_point_sets, has_mean, mean_points, file_name, plot_title, random_color, to_save)
+function [] = plot_data_points(point_set_data, num_point_sets, has_mean, mean_points, file_name, plot_title, random_color, to_save, results_folder)
 
 	f = figure();
 
@@ -24,7 +24,7 @@ function [] = plot_data_points(point_set_data, num_point_sets, has_mean, mean_po
 	hold off;
 	
 	if to_save
-		saveas(f, file_name);
+		saveas(f, strcat(results_folder, file_name));
 	end
 	
 	close(f);

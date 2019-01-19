@@ -1,9 +1,11 @@
 %% MyMainScript for Part 3 of assignment
 
 % Set to_save to 1, if you want to save the generated pictures %
-to_save = 0;
+to_save = 1;
 
 bone_data = load('../../data/bone3D.mat');
+results_folder = '../../results/bone3D/';
+
 point_set_data = bone_data.shapesTotal;
 polygon_faces = bone_data.TriangleIndex;
 dim = size(point_set_data, 1);
@@ -13,7 +15,7 @@ num_point_sets = size(point_set_data, 3);
 size(point_set_data);
 
 has_mean = 0;
-plot_data_points(point_set_data, polygon_faces, num_point_sets, has_mean, 0, 'Original_Point_Sets.png', 'Original Point Sets', 1, to_save);
+plot_data_points(point_set_data, polygon_faces, num_point_sets, has_mean, 0, 'Original_Point_Sets.png', 'Original Point Sets', 1, to_save, results_folder);
 
 tic;
 
@@ -21,7 +23,7 @@ tic;
 point_set_data_norm = make_preshape(point_set_data, dim, num_points);
 
 has_mean = 0;
-plot_data_points(point_set_data_norm, polygon_faces, num_point_sets, has_mean, 0, 'Preshape_Space.png', 'Point Sets in Preshape Space', 1, to_save);
+plot_data_points(point_set_data_norm, polygon_faces, num_point_sets, has_mean, 0, 'Preshape_Space.png', 'Point Sets in Preshape Space', 1, to_save, results_folder);
 
 mean_new = point_set_data_norm(:,:,1);
 diff_means = 1;
@@ -43,10 +45,10 @@ while (diff_means > threshold)
 end	
 
 has_mean = 1;
-plot_data_points(point_set_data_norm, polygon_faces, num_point_sets, has_mean, mean_new, 'Mean_Aligned_PointSets_Random_Color.png', 'Aligned PointSets along with mean', 1, to_save);
+plot_data_points(point_set_data_norm, polygon_faces, num_point_sets, has_mean, mean_new, 'Mean_Aligned_PointSets_Random_Color.png', 'Aligned PointSets along with mean', 1, to_save, results_folder);
 
 has_mean = 1;
-plot_data_points(point_set_data_norm, polygon_faces, num_point_sets, has_mean, mean_new, 'Mean_Aligned_PointSets.png', 'Aligned PointSets along with mean', 0, to_save);
+plot_data_points(point_set_data_norm, polygon_faces, num_point_sets, has_mean, mean_new, 'Mean_Aligned_PointSets.png', 'Aligned PointSets along with mean', 0, to_save, results_folder);
 
 % Covariance Analysis
 
@@ -59,7 +61,9 @@ cov_mat = double(point_set_data_norm_flat * point_set_data_norm_flat') ./ double
 
 f = figure();
 plot(D);
-saveas(f, 'EigenValues.png');
+if to_save
+	saveas(f, strcat(results_folder, 'EigenValues.png'));
+end
 close(f);
 
 eigVec1 = V(:, 1);
@@ -80,21 +84,20 @@ title("Modes of variation 1 with the mean");
 
 hold on;
 
-% for i = 1:num_point_sets
-% 	scatter(point_set_data_norm(1,:, i), point_set_data_norm(2, :, i), 10, [1,1,0], 'filled');
-% end	
-
-% patch('Faces',polygon_faces,'Vertices',mean_new(:,:,1)','FaceColor',[1,1,1],'EdgeColor',[1,0,0], 'FaceAlpha', 0, 'EdgeAlpha', 1);
 patch('Faces',polygon_faces,'Vertices',mode_of_var1_inc(:,:,1)','FaceColor',[1,1,1],'EdgeColor',[0,0,1], 'FaceAlpha', 0, 'EdgeAlpha', 1);
 patch('Faces',polygon_faces,'Vertices',mode_of_var1_dec(:,:,1)','FaceColor',[1,1,1],'EdgeColor',[1,0,0], 'FaceAlpha', 0, 'EdgeAlpha', 1);
 
 hold off;
 
-% saveas(f, "Modes_of_variation1.png");
-% close(f);
+view(-145, 45)
+
+if to_save
+	saveas(f, strcat(results_folder, 'Modes_of_variation1.png'));
+end
+
+close(f);
 
 % % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 mode_of_var2_inc = mean_new + 2*sqrt(eigVal2)*reshape(eigVec2, [dim, num_points]);
 mode_of_var2_dec = mean_new - 2*sqrt(eigVal2)*reshape(eigVec2, [dim, num_points]);
@@ -109,17 +112,16 @@ title("Modes of variation 2 with the mean");
 
 hold on;
 
-% for i = 1:num_point_sets
-% 	scatter(point_set_data_norm(1,:, i), point_set_data_norm(2, :, i), 10, [1,1,0], 'filled');
-% end	
-
-% patch('Faces',polygon_faces,'Vertices',mean_new(:,:,1)','FaceColor',[1,1,1],'EdgeColor',[1,0,0], 'FaceAlpha', 0, 'EdgeAlpha', 1);
 patch('Faces',polygon_faces,'Vertices',mode_of_var2_inc(:,:,1)','FaceColor',[1,1,1],'EdgeColor',[0,0,1], 'FaceAlpha', 0, 'EdgeAlpha', 1);
 patch('Faces',polygon_faces,'Vertices',mode_of_var2_dec(:,:,1)','FaceColor',[1,1,1],'EdgeColor',[1,0,0], 'FaceAlpha', 0, 'EdgeAlpha', 1);
 
 hold off;
+view(-145, 45)
 
-% saveas(f, "Modes_of_variation2.png");
-% close(f);
+if to_save
+	saveas(f, strcat(results_folder, 'Modes_of_variation2.png'));
+end
+
+close(f);
 
 toc;

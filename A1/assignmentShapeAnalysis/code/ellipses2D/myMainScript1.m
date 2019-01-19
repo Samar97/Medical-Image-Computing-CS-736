@@ -6,9 +6,11 @@ col_scale =  [0:1/(my_num_of_colors-1):1]';
 my_color_scale = [col_scale,col_scale,col_scale];
 
 % Set to_save to 1, if you want to save the generated pictures %
-to_save = 0;
+to_save = 1;
 
 ellipse_data = load('../../data/ellipses2D.mat');
+results_folder = '../../results/ellipses2D/';
+
 num_point_sets = ellipse_data.numOfPointSets;
 num_points = ellipse_data.numOfPoints;
 point_set_data = ellipse_data.pointSets;
@@ -17,7 +19,7 @@ dim = size(point_set_data, 1);
 size(point_set_data);
 
 has_mean = 0;
-plot_data_points(point_set_data, num_point_sets, has_mean, 0, 'Original_Point_Sets.png', 'Original Point Sets', 1, to_save);
+plot_data_points(point_set_data, num_point_sets, has_mean, 0, 'Original_Point_Sets.png', 'Original Point Sets', 1, to_save, results_folder);
 
 tic;
 
@@ -25,7 +27,7 @@ tic;
 point_set_data_norm = make_preshape(point_set_data, dim, num_points);
 
 has_mean = 0;
-plot_data_points(point_set_data_norm, num_point_sets, has_mean, 0, 'Preshape_Space.png', 'Point Sets in Preshape Space', 1, to_save);
+plot_data_points(point_set_data_norm, num_point_sets, has_mean, 0, 'Preshape_Space.png', 'Point Sets in Preshape Space', 1, to_save, results_folder);
 
 mean_new = point_set_data_norm(:,:,1);
 diff_means = 1;
@@ -47,10 +49,10 @@ while (diff_means > threshold)
 end	
 
 has_mean = 1;
-plot_data_points(point_set_data_norm, num_point_sets, has_mean, mean_new, 'Mean_Aligned_PointSets_Random_Color.png', 'Aligned PointSets along with mean', 1, to_save);
+plot_data_points(point_set_data_norm, num_point_sets, has_mean, mean_new, 'Mean_Aligned_PointSets_Random_Color.png', 'Aligned PointSets along with mean', 1, to_save, results_folder);
 
 has_mean = 1;
-plot_data_points(point_set_data_norm, num_point_sets, has_mean, mean_new, 'Mean_Aligned_PointSets.png', 'Aligned PointSets along with mean', 0, to_save);
+plot_data_points(point_set_data_norm, num_point_sets, has_mean, mean_new, 'Mean_Aligned_PointSets.png', 'Aligned PointSets along with mean', 0, to_save, results_folder);
 	
 % Covariance Analysis
 
@@ -63,7 +65,9 @@ cov_mat = double(point_set_data_norm_flat * point_set_data_norm_flat') ./ double
 
 f = figure();
 plot(D);
-saveas(f, 'EigenValues.png');
+if to_save
+	saveas(f, strcat(results_folder, 'EigenValues.png'));
+end
 close(f);
 
 eigVec1 = V(:, 1);
@@ -92,7 +96,10 @@ scatter(mode_of_var1_inc(1,:), mode_of_var1_inc(2,:), 10, [0, 1, 0], 'filled', '
 scatter(mode_of_var1_dec(1,:), mode_of_var1_dec(2,:), 10, [0, 0, 1], 'filled', 'd');
 
 hold off;
-saveas(f, "Modes_of_variation1.png");
+
+if to_save
+	saveas(f, strcat(results_folder, 'Modes_of_variation1.png'));
+end
 close(f);
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -120,7 +127,9 @@ scatter(mode_of_var2_dec(1,:), mode_of_var2_dec(2,:), 10, [0, 0, 1], 'filled', '
 
 hold off;
 
-saveas(f, "Modes_of_variation2.png");
+if to_save
+	saveas(f, strcat(results_folder, 'Modes_of_variation2.png'));
+end
 close(f);
 
 toc;
