@@ -1,0 +1,313 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>myMainScript1</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-01-21"><meta name="DC.source" content="myMainScript1.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">MyMainScript for Part 3 of assignment</a></li><li><a href="#2">Loading Data</a></li><li><a href="#3">Plotting Original Point Sets Data</a></li><li><a href="#4">Convert Point Sets to align them in Preshape Space</a></li><li><a href="#5">Applying algorithm for getting the mean shape</a></li><li><a href="#6">Covariance Analysis</a></li><li><a href="#7">Modes of Variation 1</a></li><li><a href="#8">Modes of Variation 2</a></li></ul></div><h2 id="1">MyMainScript for Part 3 of assignment</h2><pre class="codeinput"><span class="comment">% Set to_save to 1, if you want to save the generated pictures %</span>
+to_save = 1;
+</pre><h2 id="2">Loading Data</h2><pre class="codeinput">bone_data = load(<span class="string">'../../data/bone3D.mat'</span>);
+results_folder = <span class="string">'../../results/bone3D/'</span>;
+
+point_set_data = bone_data.shapesTotal;
+polygon_faces = bone_data.TriangleIndex;
+dim = size(point_set_data, 1);
+num_points = size(point_set_data, 2);
+num_point_sets = size(point_set_data, 3);
+</pre><h2 id="3">Plotting Original Point Sets Data</h2><pre class="codeinput">has_mean = 0;
+plot_data_points(point_set_data, polygon_faces, num_point_sets, has_mean, 0, <span class="string">'Original_Point_Sets.png'</span>, <span class="string">'Original Point Sets'</span>, 1, to_save, results_folder);
+
+tic;
+</pre><img vspace="5" hspace="5" src="myMainScript1_01.png" alt=""> <h2 id="4">Convert Point Sets to align them in Preshape Space</h2><pre class="codeinput">point_set_data_norm = make_preshape(point_set_data, dim, num_points);
+
+has_mean = 0;
+plot_data_points(point_set_data_norm, polygon_faces, num_point_sets, has_mean, 0, <span class="string">'Preshape_Space.png'</span>, <span class="string">'Point Sets in Preshape Space'</span>, 1, to_save, results_folder);
+</pre><img vspace="5" hspace="5" src="myMainScript1_02.png" alt=""> <h2 id="5">Applying algorithm for getting the mean shape</h2><pre class="codeinput">mean_new = point_set_data_norm(:,:,1);
+diff_means = 1;
+threshold = 1e-7;
+
+<span class="keyword">while</span> (diff_means &gt; threshold)
+	mean_old = mean_new;
+
+	<span class="comment">% Transform each of the pointset to match with the mean</span>
+	<span class="keyword">for</span> i = 1:num_point_sets
+		point_set_data_norm(:,:,i) = similarity_transform(mean_old, point_set_data_norm(:,:, i));
+	<span class="keyword">end</span>
+
+	<span class="comment">% Find the means from the normalised data point sets</span>
+	mean_new  = find_mean(point_set_data_norm);
+
+	<span class="comment">% Calculate infinity norm between the old mean and the new calculated mean</span>
+	diff_means = max(max(abs(mean_old - mean_new)));
+<span class="keyword">end</span>
+
+has_mean = 1;
+plot_data_points(point_set_data_norm, polygon_faces, num_point_sets, has_mean, mean_new, <span class="string">'Mean_Aligned_PointSets_Random_Color.png'</span>, <span class="string">'Aligned PointSets along with mean'</span>, 1, to_save, results_folder);
+
+has_mean = 1;
+plot_data_points(point_set_data_norm, polygon_faces, num_point_sets, has_mean, mean_new, <span class="string">'Mean_Aligned_PointSets.png'</span>, <span class="string">'Aligned PointSets along with mean'</span>, 0, to_save, results_folder);
+</pre><img vspace="5" hspace="5" src="myMainScript1_03.png" alt=""> <img vspace="5" hspace="5" src="myMainScript1_04.png" alt=""> <h2 id="6">Covariance Analysis</h2><pre class="codeinput">point_set_data_norm_flat = reshape(point_set_data_norm - repmat(mean_new, [1,1,num_point_sets]), [dim*num_points, num_point_sets]);
+cov_mat = double(point_set_data_norm_flat * point_set_data_norm_flat') ./ double(num_point_sets);
+
+[V,D] = eigs(cov_mat, dim*num_points);
+
+f = figure();
+title(<span class="string">'EigenValues'</span>);
+plot(D);
+<span class="keyword">if</span> to_save
+	saveas(f, strcat(results_folder, <span class="string">'EigenValues.png'</span>));
+<span class="keyword">end</span>
+<span class="comment">% close(f);</span>
+
+eigVec1 = V(:, 1);
+eigVal1 = D(1,1);
+eigVec2 = V(:, 2);
+eigVal2 = D(2,2);
+
+<span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+</pre><img vspace="5" hspace="5" src="myMainScript1_05.png" alt=""> <h2 id="7">Modes of Variation 1</h2><pre class="codeinput">mode_of_var1_inc = mean_new + 2*sqrt(eigVal1)*reshape(eigVec1, [dim, num_points]);
+mode_of_var1_dec = mean_new - 2*sqrt(eigVal1)*reshape(eigVec1, [dim, num_points]);
+
+mode_of_var1_inc = mode_of_var1_inc ./ norm(mode_of_var1_inc, <span class="string">'fro'</span>);
+mode_of_var1_dec = mode_of_var1_dec ./ norm(mode_of_var1_dec, <span class="string">'fro'</span>);
+
+f = figure();
+title(<span class="string">"Modes of variation 1 with the mean"</span>);
+
+hold <span class="string">on</span>;
+
+patch(<span class="string">'Faces'</span>,polygon_faces,<span class="string">'Vertices'</span>,mode_of_var1_inc(:,:,1)',<span class="string">'FaceColor'</span>,[1,1,1],<span class="string">'EdgeColor'</span>,[0,0,1], <span class="string">'FaceAlpha'</span>, 0, <span class="string">'EdgeAlpha'</span>, 1);
+patch(<span class="string">'Faces'</span>,polygon_faces,<span class="string">'Vertices'</span>,mode_of_var1_dec(:,:,1)',<span class="string">'FaceColor'</span>,[1,1,1],<span class="string">'EdgeColor'</span>,[1,0,0], <span class="string">'FaceAlpha'</span>, 0, <span class="string">'EdgeAlpha'</span>, 1);
+
+hold <span class="string">off</span>;
+
+view(-145, 45)
+
+<span class="keyword">if</span> to_save
+	saveas(f, strcat(results_folder, <span class="string">'Modes_of_variation1.png'</span>));
+<span class="keyword">end</span>
+
+<span class="comment">%close(f);</span>
+
+<span class="comment">% % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+</pre><img vspace="5" hspace="5" src="myMainScript1_06.png" alt=""> <h2 id="8">Modes of Variation 2</h2><pre class="codeinput">mode_of_var2_inc = mean_new + 2*sqrt(eigVal2)*reshape(eigVec2, [dim, num_points]);
+mode_of_var2_dec = mean_new - 2*sqrt(eigVal2)*reshape(eigVec2, [dim, num_points]);
+
+mode_of_var2_inc = mode_of_var2_inc ./ norm(mode_of_var2_inc, <span class="string">'fro'</span>);
+mode_of_var2_dec = mode_of_var2_dec ./ norm(mode_of_var2_dec, <span class="string">'fro'</span>);
+
+f = figure();
+
+title(<span class="string">"Modes of variation 2 with the mean"</span>);
+
+hold <span class="string">on</span>;
+
+patch(<span class="string">'Faces'</span>,polygon_faces,<span class="string">'Vertices'</span>,mode_of_var2_inc(:,:,1)',<span class="string">'FaceColor'</span>,[1,1,1],<span class="string">'EdgeColor'</span>,[0,0,1], <span class="string">'FaceAlpha'</span>, 0, <span class="string">'EdgeAlpha'</span>, 1);
+patch(<span class="string">'Faces'</span>,polygon_faces,<span class="string">'Vertices'</span>,mode_of_var2_dec(:,:,1)',<span class="string">'FaceColor'</span>,[1,1,1],<span class="string">'EdgeColor'</span>,[1,0,0], <span class="string">'FaceAlpha'</span>, 0, <span class="string">'EdgeAlpha'</span>, 1);
+
+hold <span class="string">off</span>;
+view(-145, 45)
+
+<span class="keyword">if</span> to_save
+	saveas(f, strcat(results_folder, <span class="string">'Modes_of_variation2.png'</span>));
+<span class="keyword">end</span>
+
+<span class="comment">%close(f);</span>
+
+toc;
+</pre><pre class="codeoutput">Elapsed time is 15.777625 seconds.
+</pre><img vspace="5" hspace="5" src="myMainScript1_07.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% MyMainScript for Part 3 of assignment
+
+% Set to_save to 1, if you want to save the generated pictures %
+to_save = 1;
+
+%% Loading Data
+bone_data = load('../../data/bone3D.mat');
+results_folder = '../../results/bone3D/';
+
+point_set_data = bone_data.shapesTotal;
+polygon_faces = bone_data.TriangleIndex;
+dim = size(point_set_data, 1);
+num_points = size(point_set_data, 2);
+num_point_sets = size(point_set_data, 3);
+
+
+%% Plotting Original Point Sets Data
+has_mean = 0;
+plot_data_points(point_set_data, polygon_faces, num_point_sets, has_mean, 0, 'Original_Point_Sets.png', 'Original Point Sets', 1, to_save, results_folder);
+
+tic;
+
+%% Convert Point Sets to align them in Preshape Space
+point_set_data_norm = make_preshape(point_set_data, dim, num_points);
+
+has_mean = 0;
+plot_data_points(point_set_data_norm, polygon_faces, num_point_sets, has_mean, 0, 'Preshape_Space.png', 'Point Sets in Preshape Space', 1, to_save, results_folder);
+
+%% Applying algorithm for getting the mean shape
+mean_new = point_set_data_norm(:,:,1);
+diff_means = 1;
+threshold = 1e-7;
+
+while (diff_means > threshold)
+	mean_old = mean_new;
+
+	% Transform each of the pointset to match with the mean
+	for i = 1:num_point_sets
+		point_set_data_norm(:,:,i) = similarity_transform(mean_old, point_set_data_norm(:,:, i));
+	end
+
+	% Find the means from the normalised data point sets
+	mean_new  = find_mean(point_set_data_norm);
+
+	% Calculate infinity norm between the old mean and the new calculated mean
+	diff_means = max(max(abs(mean_old - mean_new)));
+end	
+
+has_mean = 1;
+plot_data_points(point_set_data_norm, polygon_faces, num_point_sets, has_mean, mean_new, 'Mean_Aligned_PointSets_Random_Color.png', 'Aligned PointSets along with mean', 1, to_save, results_folder);
+
+has_mean = 1;
+plot_data_points(point_set_data_norm, polygon_faces, num_point_sets, has_mean, mean_new, 'Mean_Aligned_PointSets.png', 'Aligned PointSets along with mean', 0, to_save, results_folder);
+
+%% Covariance Analysis
+
+point_set_data_norm_flat = reshape(point_set_data_norm - repmat(mean_new, [1,1,num_point_sets]), [dim*num_points, num_point_sets]);
+cov_mat = double(point_set_data_norm_flat * point_set_data_norm_flat') ./ double(num_point_sets);
+
+[V,D] = eigs(cov_mat, dim*num_points);
+
+f = figure();
+title('EigenValues');
+plot(D);
+if to_save
+	saveas(f, strcat(results_folder, 'EigenValues.png'));
+end
+% close(f);
+
+eigVec1 = V(:, 1);
+eigVal1 = D(1,1);
+eigVec2 = V(:, 2);
+eigVal2 = D(2,2);
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Modes of Variation 1
+
+mode_of_var1_inc = mean_new + 2*sqrt(eigVal1)*reshape(eigVec1, [dim, num_points]);
+mode_of_var1_dec = mean_new - 2*sqrt(eigVal1)*reshape(eigVec1, [dim, num_points]);
+
+mode_of_var1_inc = mode_of_var1_inc ./ norm(mode_of_var1_inc, 'fro');
+mode_of_var1_dec = mode_of_var1_dec ./ norm(mode_of_var1_dec, 'fro');
+
+f = figure();
+title("Modes of variation 1 with the mean");
+
+hold on;
+
+patch('Faces',polygon_faces,'Vertices',mode_of_var1_inc(:,:,1)','FaceColor',[1,1,1],'EdgeColor',[0,0,1], 'FaceAlpha', 0, 'EdgeAlpha', 1);
+patch('Faces',polygon_faces,'Vertices',mode_of_var1_dec(:,:,1)','FaceColor',[1,1,1],'EdgeColor',[1,0,0], 'FaceAlpha', 0, 'EdgeAlpha', 1);
+
+hold off;
+
+view(-145, 45)
+
+if to_save
+	saveas(f, strcat(results_folder, 'Modes_of_variation1.png'));
+end
+
+%close(f);
+
+% % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Modes of Variation 2
+
+mode_of_var2_inc = mean_new + 2*sqrt(eigVal2)*reshape(eigVec2, [dim, num_points]);
+mode_of_var2_dec = mean_new - 2*sqrt(eigVal2)*reshape(eigVec2, [dim, num_points]);
+
+mode_of_var2_inc = mode_of_var2_inc ./ norm(mode_of_var2_inc, 'fro');
+mode_of_var2_dec = mode_of_var2_dec ./ norm(mode_of_var2_dec, 'fro');
+
+f = figure();
+
+title("Modes of variation 2 with the mean");
+
+hold on;
+
+patch('Faces',polygon_faces,'Vertices',mode_of_var2_inc(:,:,1)','FaceColor',[1,1,1],'EdgeColor',[0,0,1], 'FaceAlpha', 0, 'EdgeAlpha', 1);
+patch('Faces',polygon_faces,'Vertices',mode_of_var2_dec(:,:,1)','FaceColor',[1,1,1],'EdgeColor',[1,0,0], 'FaceAlpha', 0, 'EdgeAlpha', 1);
+
+hold off;
+view(-145, 45)
+
+if to_save
+	saveas(f, strcat(results_folder, 'Modes_of_variation2.png'));
+end
+
+%close(f);
+
+toc;    
+##### SOURCE END #####
+--></body></html>
