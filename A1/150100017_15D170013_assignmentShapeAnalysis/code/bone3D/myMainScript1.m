@@ -73,7 +73,7 @@ eigVec2 = V(:, 2);
 eigVal2 = D(2,2);
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Modes of Variation 1
+%% Modes of Variation 1 : mean + 2 *sigma in blue and mean - 2 * sigma in red
 
 mode_of_var1_inc = mean_new + 2*sqrt(eigVal1)*reshape(eigVec1, [dim, num_points]);
 mode_of_var1_dec = mean_new - 2*sqrt(eigVal1)*reshape(eigVec1, [dim, num_points]);
@@ -82,7 +82,7 @@ mode_of_var1_inc = mode_of_var1_inc ./ norm(mode_of_var1_inc, 'fro');
 mode_of_var1_dec = mode_of_var1_dec ./ norm(mode_of_var1_dec, 'fro');
 
 f = figure();
-title("Modes of variation 1 with the mean");
+title("Modes of variation 1");
 
 hold on;
 
@@ -100,7 +100,8 @@ end
 %close(f);
 
 % % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Modes of Variation 2
+%% Modes of Variation 2 : mean + 2 *sigma in blue and mean - 2 * sigma in red
+
 
 mode_of_var2_inc = mean_new + 2*sqrt(eigVal2)*reshape(eigVec2, [dim, num_points]);
 mode_of_var2_dec = mean_new - 2*sqrt(eigVal2)*reshape(eigVec2, [dim, num_points]);
@@ -110,7 +111,7 @@ mode_of_var2_dec = mode_of_var2_dec ./ norm(mode_of_var2_dec, 'fro');
 
 f = figure();
 
-title("Modes of variation 2 with the mean");
+title("Modes of variation 2");
 
 hold on;
 

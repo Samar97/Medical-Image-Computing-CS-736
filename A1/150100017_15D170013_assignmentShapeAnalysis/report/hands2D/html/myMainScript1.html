@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">MyMainScript for Part 2 of assignment</a></li><li><a href="#2">Loading Data</a></li><li><a href="#3">Plotting Original Point Sets Data</a></li><li><a href="#4">Convert Point Sets to align them in Preshape Space</a></li><li><a href="#5">Applying algorithm for getting the mean shape</a></li><li><a href="#6">Covariance Analysis</a></li><li><a href="#7">Modes of Variation 1</a></li><li><a href="#8">Modes of Variation 2</a></li></ul></div><h2 id="1">MyMainScript for Part 2 of assignment</h2><pre class="codeinput"><span class="comment">% Set to_save to 1, if you want to save the generated pictures %</span>
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">MyMainScript for Part 2 of assignment</a></li><li><a href="#2">Loading Data</a></li><li><a href="#3">Plotting Original Point Sets Data</a></li><li><a href="#4">Convert Point Sets to align them in Preshape Space</a></li><li><a href="#5">Applying algorithm for getting the mean shape</a></li><li><a href="#6">Covariance Analysis</a></li><li><a href="#7">Modes of Variation 1 : The mean is in red, mean + 2 *sigma in green and mean - 2 * sigma in blue</a></li><li><a href="#8">Modes of Variation 2 : The mean is in red, mean + 2 *sigma in green and mean - 2 * sigma in blue</a></li></ul></div><h2 id="1">MyMainScript for Part 2 of assignment</h2><pre class="codeinput"><span class="comment">% Set to_save to 1, if you want to save the generated pictures %</span>
 to_save = 1;
 </pre><h2 id="2">Loading Data</h2><pre class="codeinput">hands_data = load(<span class="string">'../../data/hands2D.mat'</span>);
 results_folder = <span class="string">'../../results/hands2D/'</span>;
@@ -129,7 +129,7 @@ eigVec2 = V(:, 2);
 eigVal2 = D(2,2);
 
 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-</pre><img vspace="5" hspace="5" src="myMainScript1_05.png" alt=""> <h2 id="7">Modes of Variation 1</h2><pre class="codeinput">mode_of_var1_inc = mean_new + 2*sqrt(eigVal1)*reshape(eigVec1, [dim, num_points]);
+</pre><img vspace="5" hspace="5" src="myMainScript1_05.png" alt=""> <h2 id="7">Modes of Variation 1 : The mean is in red, mean + 2 *sigma in green and mean - 2 * sigma in blue</h2><pre class="codeinput">mode_of_var1_inc = mean_new + 2*sqrt(eigVal1)*reshape(eigVec1, [dim, num_points]);
 mode_of_var1_dec = mean_new - 2*sqrt(eigVal1)*reshape(eigVec1, [dim, num_points]);
 
 mode_of_var1_inc = mode_of_var1_inc ./ norm(mode_of_var1_inc, <span class="string">'fro'</span>);
@@ -154,7 +154,7 @@ hold <span class="string">off</span>;
 <span class="comment">% close(f);</span>
 
 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-</pre><img vspace="5" hspace="5" src="myMainScript1_06.png" alt=""> <h2 id="8">Modes of Variation 2</h2><pre class="codeinput">mode_of_var2_inc = mean_new + 2*sqrt(eigVal2)*reshape(eigVec2, [dim, num_points]);
+</pre><img vspace="5" hspace="5" src="myMainScript1_06.png" alt=""> <h2 id="8">Modes of Variation 2 : The mean is in red, mean + 2 *sigma in green and mean - 2 * sigma in blue</h2><pre class="codeinput">mode_of_var2_inc = mean_new + 2*sqrt(eigVal2)*reshape(eigVec2, [dim, num_points]);
 mode_of_var2_dec = mean_new - 2*sqrt(eigVal2)*reshape(eigVec2, [dim, num_points]);
 
 mode_of_var2_inc = mode_of_var2_inc ./ norm(mode_of_var2_inc, <span class="string">'fro'</span>);
@@ -182,7 +182,7 @@ hold <span class="string">off</span>;
 <span class="comment">% close(f);</span>
 
 toc;
-</pre><pre class="codeoutput">Elapsed time is 8.690657 seconds.
+</pre><pre class="codeoutput">Elapsed time is 11.854298 seconds.
 </pre><img vspace="5" hspace="5" src="myMainScript1_07.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% MyMainScript for Part 2 of assignment
@@ -264,7 +264,7 @@ eigVec2 = V(:, 2);
 eigVal2 = D(2,2);
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Modes of Variation 1
+%% Modes of Variation 1 : The mean is in red, mean + 2 *sigma in green and mean - 2 * sigma in blue
 
 mode_of_var1_inc = mean_new + 2*sqrt(eigVal1)*reshape(eigVec1, [dim, num_points]);
 mode_of_var1_dec = mean_new - 2*sqrt(eigVal1)*reshape(eigVec1, [dim, num_points]);
@@ -291,7 +291,7 @@ end
 % close(f);
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Modes of Variation 2
+%% Modes of Variation 2 : The mean is in red, mean + 2 *sigma in green and mean - 2 * sigma in blue
 
 mode_of_var2_inc = mean_new + 2*sqrt(eigVal2)*reshape(eigVec2, [dim, num_points]);
 mode_of_var2_dec = mean_new - 2*sqrt(eigVal2)*reshape(eigVec2, [dim, num_points]);

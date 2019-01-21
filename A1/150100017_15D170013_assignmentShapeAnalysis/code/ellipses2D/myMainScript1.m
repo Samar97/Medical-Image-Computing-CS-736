@@ -55,7 +55,7 @@ plot_data_points(point_set_data_norm, num_point_sets, has_mean, mean_new, 'Mean_
 has_mean = 1;
 plot_data_points(point_set_data_norm, num_point_sets, has_mean, mean_new, 'Mean_Aligned_PointSets.png', 'Aligned PointSets along with mean', 0, to_save, results_folder);
 	
-%% Covariance Analysis
+%% Covariance Analysis 
 
 point_set_data_norm_flat = reshape(point_set_data_norm - repmat(mean_new, [1,1,num_point_sets]), [dim*num_points, num_point_sets]);
 cov_mat = double(point_set_data_norm_flat * point_set_data_norm_flat') ./ double(num_point_sets);
@@ -75,7 +75,7 @@ eigVec2 = V(:, 2);
 eigVal2 = D(2,2);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Modes of Variation 1
+%% Modes of Variation 1 : The mean is in red, mean + 2 *sigma in green and mean - 2 * sigma in blue
 
 mode_of_var1_inc = mean_new + 2*sqrt(eigVal1)*reshape(eigVec1, [dim, num_points]);
 mode_of_var1_dec = mean_new - 2*sqrt(eigVal1)*reshape(eigVec1, [dim, num_points]);
@@ -103,7 +103,7 @@ end
 % close(f);
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Modes of Variation 2
+%% Modes of Variation 2 : The mean is in red, mean + 2 *sigma in green and mean - 2 * sigma in blue
 
 mode_of_var2_inc = mean_new + 2*sqrt(eigVal2)*reshape(eigVec2, [dim, num_points]);
 mode_of_var2_dec = mean_new - 2*sqrt(eigVal2)*reshape(eigVec2, [dim, num_points]);

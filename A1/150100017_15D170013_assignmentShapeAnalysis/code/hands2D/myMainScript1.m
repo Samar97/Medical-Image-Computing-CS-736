@@ -77,7 +77,7 @@ eigVec2 = V(:, 2);
 eigVal2 = D(2,2);
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Modes of Variation 1
+%% Modes of Variation 1 : The mean is in red, mean + 2 *sigma in green and mean - 2 * sigma in blue
 
 mode_of_var1_inc = mean_new + 2*sqrt(eigVal1)*reshape(eigVec1, [dim, num_points]);
 mode_of_var1_dec = mean_new - 2*sqrt(eigVal1)*reshape(eigVec1, [dim, num_points]);
@@ -104,7 +104,7 @@ end
 % close(f);
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Modes of Variation 2
+%% Modes of Variation 2 : The mean is in red, mean + 2 *sigma in green and mean - 2 * sigma in blue
 
 mode_of_var2_inc = mean_new + 2*sqrt(eigVal2)*reshape(eigVec2, [dim, num_points]);
 mode_of_var2_dec = mean_new - 2*sqrt(eigVal2)*reshape(eigVec2, [dim, num_points]);
