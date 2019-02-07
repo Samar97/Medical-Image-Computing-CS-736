@@ -35,6 +35,11 @@ sig 		= 1;
 max_iter	= 100;
 
 %% Quadratic Prior %
+
+% Auto Parameter Tuning for Quadratic
+
+
+
 alfa 		= 0.5;
 gam 		= 0.5;
 prior 		= "quadratic";
@@ -75,8 +80,6 @@ disp(disc_adap_rrmse);
 
 % figure;
 % plot(loss_list);
-
-
 
 toc;
 
