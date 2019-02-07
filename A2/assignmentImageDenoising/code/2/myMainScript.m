@@ -6,7 +6,7 @@ col_scale =  [0:1/(my_num_of_colors-1):1]';
 my_color_scale = [col_scale,col_scale,col_scale];
 
 % Set to_save to 1, if you want to save the generated pictures %
-to_save = 0;
+to_save = 1;
 is_color = 0;
 
 % Loading the pictures %
@@ -15,10 +15,11 @@ brain_noisy = brain_data.imageNoisy;
 
 tic;
 
-%% Part a
+%% Original Image
 savefig(my_color_scale,abs(brain_noisy),"Noisy","noisy_brain.png",is_color,to_save);
 
-%% Extracting the top 50 x 50 non overlapping portion to determine sigma level of noise
+%% Part a : Extracting the top 50 x 50 non overlapping portion to determine sigma level of noise
+
 brain_bg = brain_noisy(1:50,1:50);
 real_brain_bg = real(brain_bg);
 imag_brain_bg = imag(brain_bg);
@@ -30,7 +31,9 @@ step_size 	= 0.005;
 max_iter	= 50;
 sig 		= mean([std_imag,std_real]);
 
-%% Part b %
+%% Part b Using all the priors along with gaussian noice likelihood%
+% We also tried using Rician which did achieve a lot of smoothing for extreme values but not for 
+% brain part
 
 %% Quadratic Prior %
 % Best Params - % alfa = 0.008
@@ -40,8 +43,11 @@ prior = "quadratic";
 like = "gauss";
 [denoised_img_quad,loss_list] = denoiser(brain_noisy,alfa,step_size,max_iter,sig,gam,prior,like);
 savefig(my_color_scale,abs(denoised_img_quad),"Quadratic Prior Denoised","quadratic_denoised_brain.png",is_color,to_save);
-% figure;
-% plot(loss_list);
+
+fig = figure;
+plot(loss_list);
+saveas(fig, "Quadratic loss-vs-iterations.png")
+% close(fig);
 
 %% Huber Prior 
 % Best Params - % alfa = 0.004; gam = 0.2;
@@ -52,11 +58,14 @@ like = "gauss";
 [denoised_img_huber,loss_list] = denoiser(brain_noisy,alfa,step_size,max_iter,sig,gam,prior,like);
 savefig(my_color_scale,abs(denoised_img_huber),"Huber Prior Denoised","huber_denoised_brain.png",is_color,to_save);
 
-% figure;
-% plot(loss_list);
+fig = figure;
+plot(loss_list);
+saveas(fig, "Huber loss-vs-iterations.png")
+% close(fig);
 
 %% Disconitnuity Adaptive Prior %
 % Best Params - % alfa = 0.003; gam = 0.3;
+
 alfa 		= 0.003;
 gam 		= 0.3;
 prior 		= "discon_adap";
@@ -64,8 +73,10 @@ like = "gauss";
 [denoised_img_disc_adap,loss_list] = denoiser(brain_noisy,alfa,step_size,max_iter,sig,gam,prior,like);
 savefig(my_color_scale,abs(denoised_img_disc_adap),"Disconitnuity Adapt Prior Denoised","discon_adap_denoised_brain.png",is_color,to_save);
 
-% figure;
-% plot(loss_list);
+fig = figure;
+plot(loss_list);
+saveas(fig, "Disconitnuity Adaptive loss-vs-iterations.png")
+% close(fig);
 
 toc;
 
@@ -87,6 +98,6 @@ function savefig(my_color_scale,modified_pic,title_name,file_name,is_color,to_sa
 	impixelinfo();
     
 	if to_save == 1
-		saveas(fig,file_name),close(fig);
+		saveas(fig,file_name)%,close(fig);
 	end
 end

@@ -17,121 +17,173 @@ phantom_noiseless 	= phantom_data.imageNoiseless;
 
 tic;
 
-% savefig2(my_color_scale,abs(phantom_noisy),abs(phantom_noiseless),"Phantom","phantom.png",is_color,0);
-% waitforbuttonpress;
-
+%% Original Noisy and Noiseless Data
 savefig(my_color_scale,abs(phantom_noisy),"Noisy","noisy.png",is_color,to_save);
 savefig(my_color_scale,abs(phantom_noiseless),"Noiseless","noiseless.png",is_color,to_save);
 
-
-%% Part a
 rrmse = RRMSE(phantom_noiseless, phantom_noisy);
+disp("RRMSE Value between noisy and noiseless : ");
+disp(rrmse);
 
-
-%% Part b %
-
+%% Applying Denoising ALgorithms with different priors
 step_size 	= 0.001;
 sig 		= 1;
 max_iter	= 100;
 
 %% Quadratic Prior %
 
+disp("Quadratic Prior");
+disp("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+
 % Auto Parameter Tuning for Quadratic
+% alfa_vals = [0.71:0.001:0.8];
+% rrmse_vals = [];
+% prior 		= "quadratic";
+% gam 		= 0.5;
 
+% for alfa = alfa_vals
+% 	[denoised_img_quad,loss_list] = denoiser(phantom_noisy,alfa,step_size,max_iter,sig,gam,prior);
+% 	quad_rrmse = RRMSE(phantom_noiseless,denoised_img_quad);
+% 	rrmse_vals = [rrmse_vals, quad_rrmse];
+% end
 
+% disp(alfa_vals);
+% disp(rrmse_vals);
 
-alfa 		= 0.5;
+alfa_best 	= 0.78;
 gam 		= 0.5;
 prior 		= "quadratic";
-[denoised_img_quad,loss_list] = denoiser(phantom_noisy,alfa,step_size,max_iter,sig,gam,prior);
-% savefig3(my_color_scale,abs(phantom_noisy),abs(denoised_img_quad),abs(phantom_noiseless),"Denoised Image","Quadratic","quadratic_denoised.png",is_color,to_save);
+[denoised_img_quad,loss_list] = denoiser(phantom_noisy,alfa_best,step_size,max_iter,sig,gam,prior);
 savefig(my_color_scale,abs(denoised_img_quad),"Quadratic Prior Denoised","quadratic_denoised.png",is_color,to_save);
 
-quad_rrmse = RRMSE(phantom_noiseless,denoised_img_quad);
-disp(quad_rrmse);
+fig = figure;
+plot(loss_list);
+saveas(fig, "Quadratic loss-vs-iterations.png")
+% close(fig);
 
-% figure;
-% plot(loss_list);
+% Showing results in neighbourhood of best params
+quad_rrmse = RRMSE(phantom_noiseless,denoised_img_quad);
+fprintf("best_alpha= %f\n", alfa_best);
+fprintf("RRMSE= %f \n",  quad_rrmse);
+
+[denoised_img_quad,loss_list] = denoiser(phantom_noisy,0.8*alfa_best,step_size,max_iter,sig,gam,prior);
+quad_rrmse = RRMSE(phantom_noiseless,denoised_img_quad);
+fprintf("0.8 times best_alpha= %f\n", 0.8*alfa_best);
+fprintf("RRMSE= %f \n", quad_rrmse);
+
+[denoised_img_quad,loss_list] = denoiser(phantom_noisy,1.2*alfa_best,step_size,max_iter,sig,gam,prior);
+quad_rrmse = RRMSE(phantom_noiseless,denoised_img_quad);
+fprintf("1.2 times best_alpha= %f\n", 1.2*alfa_best);
+fprintf("RRMSE= %f \n", quad_rrmse);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Huber Prior %
-alfa 		= 0.5;
-gam 		= 0.5;
+
+disp("Huber Prior ")
+disp("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+
+% Auto Parameter Tuning for Huber
+% alfa_vals = [0.1:0.02:0.2];
+% gam_vals = [0.01:0.01:0.05];
+% rrmse_vals = [];
+% gam = 0.03
+% prior 		= "huber";
+
+% for gam = gam_vals
+% 	for alfa = alfa_vals
+% 		[denoised_img_quad,loss_list] = denoiser(phantom_noisy,alfa,step_size,max_iter,sig,gam,prior);
+% 		quad_rrmse = RRMSE(phantom_noiseless,denoised_img_quad);
+% 		rrmse_vals = [rrmse_vals, quad_rrmse];
+% 		disp(gam);
+% 		disp(alfa);
+% 	end
+% end
+
+% disp(rrmse_vals);
+
+alfa_best 		= 0.15;
+gam_best 		= 0.02;
 prior 		= "huber";
-[denoised_img_huber,loss_list] = denoiser(phantom_noisy,alfa,step_size,max_iter,sig,gam,prior);
-% savefig3(my_color_scale,abs(phantom_noisy),abs(denoised_img_huber),abs(phantom_noiseless),"Denoised Image","huber","huber_denoised.png",is_color,to_save);
+[denoised_img_huber,loss_list] = denoiser(phantom_noisy,alfa_best,step_size,max_iter,sig,gam_best,prior);
 savefig(my_color_scale,abs(denoised_img_huber),"Huber Prior Denoised","huber_denoised.png",is_color,to_save);
 
-huber_rrmse = RRMSE(phantom_noiseless,denoised_img_huber);
-disp(huber_rrmse);
+fig = figure;
+plot(loss_list);
+saveas(fig, "Huber loss-vs-iterations.png")
+% close(fig);
 
-% figure;
-% plot(loss_list);
+huber_rrmse = RRMSE(phantom_noiseless,denoised_img_huber);
+fprintf("best_alpha= %f, best_gamma= %f\n", alfa_best, gam_best);
+fprintf("RRMSE= %f \n",  huber_rrmse);
+
+% Showing results in neighbourhood of best params
+
+[denoised_img_huber,loss_list] = denoiser(phantom_noisy,0.8*alfa_best,step_size,max_iter,sig,gam_best,prior);
+huber_rrmse = RRMSE(phantom_noiseless,denoised_img_huber);
+fprintf("0.8 times best_alpha= %f\n", 0.8*alfa_best);
+fprintf("RRMSE= %f \n", huber_rrmse);
+
+[denoised_img_huber,loss_list] = denoiser(phantom_noisy,1.2*alfa_best,step_size,max_iter,sig,gam_best,prior);
+huber_rrmse = RRMSE(phantom_noiseless,denoised_img_huber);
+fprintf("1.2 times best_alpha= %f\n", 1.2*alfa_best);
+fprintf("RRMSE= %f \n", huber_rrmse);
+
+[denoised_img_huber,loss_list] = denoiser(phantom_noisy,alfa_best,step_size,max_iter,sig,0.8*gam_best,prior);
+huber_rrmse = RRMSE(phantom_noiseless,denoised_img_huber);
+fprintf("0.8 times best_gamma= %f\n", 0.8*gam_best);
+fprintf("RRMSE= %f \n", huber_rrmse);
+
+[denoised_img_huber,loss_list] = denoiser(phantom_noisy,alfa_best,step_size,max_iter,sig,1.2*gam_best,prior);
+huber_rrmse = RRMSE(phantom_noiseless,denoised_img_huber);
+fprintf("1.2 times best_gamma= %f\n", 1.2*gam_best);
+fprintf("RRMSE= %f \n", huber_rrmse);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Disconitnuity Adaptive Prior %
-alfa 		= 0.5;
-gam 		= 0.5;
+
+disp("Disconitnuity Adaptive Prior ");
+disp("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+
+alfa_best 	= 0.008;
+gam_best 	= 0.0024;
 prior 		= "discon_adap";
-[denoised_img_disc_adap,loss_list] = denoiser(phantom_noisy,alfa,step_size,max_iter,sig,gam,prior);
-% savefig3(my_color_scale,abs(phantom_noisy),abs(denoised_img_disc_adap),abs(phantom_noiseless),"Denoised Image","discon_adap","discon_adap_denoised.png",is_color,to_save);
+[denoised_img_disc_adap,loss_list] = denoiser(phantom_noisy,alfa_best,step_size,max_iter,sig,gam_best,prior);
 savefig(my_color_scale,abs(denoised_img_disc_adap),"Disconitnuity Adapt Prior Denoised","discon_adap_denoised.png",is_color,to_save);
 
-disc_adap_rrmse = RRMSE(phantom_noiseless,denoised_img_disc_adap);
-disp(disc_adap_rrmse);
+fig = figure;
+plot(loss_list);
+saveas(fig, "discon_adap loss-vs-iterations.png");
+% close(fig);
 
-% figure;
-% plot(loss_list);
+disc_adap_rrmse = RRMSE(phantom_noiseless,denoised_img_disc_adap);
+fprintf("best_alpha= %f, best_gamma= %f\n", alfa_best, gam_best);
+fprintf("RRMSE= %f \n",  disc_adap_rrmse);
+
+% Showing results in neighbourhood of best params
+[denoised_img_disc_adap,loss_list] = denoiser(phantom_noisy,0.8*alfa_best,step_size,max_iter,sig,gam_best,prior);
+disc_adap_rrmse = RRMSE(phantom_noiseless,denoised_img_disc_adap);
+fprintf("0.8 times best_alpha= %f\n", 0.8*alfa_best);
+fprintf("RRMSE= %f \n", disc_adap_rrmse);
+
+[denoised_img_disc_adap,loss_list] = denoiser(phantom_noisy,1.2*alfa_best,step_size,max_iter,sig,gam_best,prior);
+disc_adap_rrmse = RRMSE(phantom_noiseless,denoised_img_disc_adap);
+fprintf("1.2 times best_alpha= %f\n", 1.2*alfa_best);
+fprintf("RRMSE= %f \n", disc_adap_rrmse);
+
+[denoised_img_disc_adap,loss_list] = denoiser(phantom_noisy,alfa_best,step_size,max_iter,sig,0.8*gam_best,prior);
+disc_adap_rrmse = RRMSE(phantom_noiseless,denoised_img_disc_adap);
+fprintf("0.8 times best_gamma= %f\n", 0.8*gam_best);
+fprintf("RRMSE= %f \n", disc_adap_rrmse);
+
+[denoised_img_disc_adap,loss_list] = denoiser(phantom_noisy,alfa_best,step_size,max_iter,sig,1.2*gam_best,prior);
+disc_adap_rrmse = RRMSE(phantom_noiseless,denoised_img_disc_adap);
+fprintf("1.2 times best_gamma= %f\n", 1.2*gam_best);
+fprintf("RRMSE= %f \n", disc_adap_rrmse);
 
 toc;
 
-% Helper function to display and save 3 processed images %
-function savefig3(my_color_scale,original_pic,mid_pic,modified_pic,mid_name,title_name,file_name,is_color,to_save)
-	if to_save==1
-		fig = figure('units','normalized','outerposition',[0 0 1 1]); colormap(my_color_scale);
-	else
-		fig = figure; colormap(my_color_scale);
-	end
-
-	if is_color == 1
-		colormap jet;
-	else
-		colormap(gray);
-	end
-	
-	subplot(1,3,1), imagesc(original_pic), title('Original Image'), colorbar, daspect([1 1 1]), axis tight;
-	subplot(1,3,2), imagesc(mid_pic), title(mid_name), colorbar, daspect([1 1 1]), axis tight;
-	subplot(1,3,3), imagesc(modified_pic), title(title_name), colorbar, daspect([1 1 1]), axis tight;
-	impixelinfo();
-    
-	if to_save == 1
-		saveas(fig,file_name),close(fig);
-	end
-end
-
-
-% Helper function to display and save processed images %
-function savefig2(my_color_scale,original_pic,modified_pic,title_name,file_name,is_color,to_save)
-	if to_save==1
-		fig = figure('units','normalized','outerposition',[0 0 1 1]); colormap(my_color_scale);
-	else
-		fig = figure; colormap(my_color_scale);
-	end
-
-	if is_color == 1
-		colormap jet;
-	else
-		colormap(gray);
-	end
-	
-	subplot(1,2,1), imagesc(original_pic), title('Original Image'), colorbar, daspect([1 1 1]), axis tight;
-	subplot(1,2,2), imagesc(modified_pic), title(title_name), colorbar, daspect([1 1 1]), axis tight;
-	impixelinfo();
-    
-	if to_save == 1
-		saveas(fig,file_name),close(fig);
-	end
-end
-
-% Helper function to display and save processed images %
 function savefig(my_color_scale,modified_pic,title_name,file_name,is_color,to_save)
 	if to_save==1
 		fig = figure('units','normalized','outerposition',[0 0 1 1]); colormap(my_color_scale);
@@ -149,6 +201,6 @@ function savefig(my_color_scale,modified_pic,title_name,file_name,is_color,to_sa
 	impixelinfo();
     
 	if to_save == 1
-		saveas(fig,file_name),close(fig);
+		% saveas(fig,file_name),close(fig);
 	end
 end

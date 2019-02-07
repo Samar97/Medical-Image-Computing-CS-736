@@ -1,0 +1,259 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>myMainScript</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-02-07"><meta name="DC.source" content="myMainScript.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">MyMainScript</a></li><li><a href="#2">Original Image</a></li><li><a href="#3">Part a : Extracting the top 50 x 50 non overlapping portion to determine sigma level of noise</a></li><li><a href="#4">Part b Using all the priors along with gaussian noice likelihood%</a></li><li><a href="#5">Quadratic Prior %</a></li><li><a href="#6">Huber Prior</a></li><li><a href="#7">Disconitnuity Adaptive Prior %</a></li></ul></div><h2 id="1">MyMainScript</h2><pre class="codeinput"><span class="comment">% Setting the color scale %</span>
+my_num_of_colors = 256;
+col_scale =  [0:1/(my_num_of_colors-1):1]';
+my_color_scale = [col_scale,col_scale,col_scale];
+
+<span class="comment">% Set to_save to 1, if you want to save the generated pictures %</span>
+to_save = 1;
+is_color = 0;
+
+<span class="comment">% Loading the pictures %</span>
+brain_data  = load(<span class="string">'../../data/assignmentImageDenoisingBrainNoisy.mat'</span>);
+brain_noisy = brain_data.imageNoisy;
+
+tic;
+</pre><h2 id="2">Original Image</h2><pre class="codeinput">savefig(my_color_scale,abs(brain_noisy),<span class="string">"Noisy"</span>,<span class="string">"noisy_brain.png"</span>,is_color,to_save);
+</pre><img vspace="5" hspace="5" src="myMainScript_01.png" alt=""> <h2 id="3">Part a : Extracting the top 50 x 50 non overlapping portion to determine sigma level of noise</h2><pre class="codeinput">brain_bg = brain_noisy(1:50,1:50);
+real_brain_bg = real(brain_bg);
+imag_brain_bg = imag(brain_bg);
+
+std_real = sqrt(var(real_brain_bg(:)));
+std_imag = sqrt(var(imag_brain_bg(:)));
+
+step_size 	= 0.005;
+max_iter	= 50;
+sig 		= mean([std_imag,std_real]);
+</pre><h2 id="4">Part b Using all the priors along with gaussian noice likelihood%</h2><p>We also tried using Rician which did achieve a lot of smoothing for extreme values but not for brain part</p><h2 id="5">Quadratic Prior %</h2><p>Best Params - % alfa = 0.008</p><pre class="codeinput">alfa 	= 0.008;
+gam 	= 0.5; <span class="comment">% Doesn't play a role in quadratic though</span>
+prior = <span class="string">"quadratic"</span>;
+like = <span class="string">"gauss"</span>;
+[denoised_img_quad,loss_list] = denoiser(brain_noisy,alfa,step_size,max_iter,sig,gam,prior,like);
+savefig(my_color_scale,abs(denoised_img_quad),<span class="string">"Quadratic Prior Denoised"</span>,<span class="string">"quadratic_denoised_brain.png"</span>,is_color,to_save);
+
+fig = figure;
+plot(loss_list);
+saveas(fig, <span class="string">"Quadratic loss-vs-iterations.png"</span>)
+<span class="comment">% close(fig);</span>
+</pre><img vspace="5" hspace="5" src="myMainScript_02.png" alt=""> <img vspace="5" hspace="5" src="myMainScript_03.png" alt=""> <h2 id="6">Huber Prior</h2><p>Best Params - % alfa = 0.004; gam = 0.2;</p><pre class="codeinput">alfa 	= 0.004;
+gam 	= 0.2;
+prior = <span class="string">"huber"</span>;
+like = <span class="string">"gauss"</span>;
+[denoised_img_huber,loss_list] = denoiser(brain_noisy,alfa,step_size,max_iter,sig,gam,prior,like);
+savefig(my_color_scale,abs(denoised_img_huber),<span class="string">"Huber Prior Denoised"</span>,<span class="string">"huber_denoised_brain.png"</span>,is_color,to_save);
+
+fig = figure;
+plot(loss_list);
+saveas(fig, <span class="string">"Huber loss-vs-iterations.png"</span>)
+<span class="comment">% close(fig);</span>
+</pre><img vspace="5" hspace="5" src="myMainScript_04.png" alt=""> <img vspace="5" hspace="5" src="myMainScript_05.png" alt=""> <h2 id="7">Disconitnuity Adaptive Prior %</h2><p>Best Params - % alfa = 0.003; gam = 0.3;</p><pre class="codeinput">alfa 		= 0.003;
+gam 		= 0.3;
+prior 		= <span class="string">"discon_adap"</span>;
+like = <span class="string">"gauss"</span>;
+[denoised_img_disc_adap,loss_list] = denoiser(brain_noisy,alfa,step_size,max_iter,sig,gam,prior,like);
+savefig(my_color_scale,abs(denoised_img_disc_adap),<span class="string">"Disconitnuity Adapt Prior Denoised"</span>,<span class="string">"discon_adap_denoised_brain.png"</span>,is_color,to_save);
+
+fig = figure;
+plot(loss_list);
+saveas(fig, <span class="string">"Disconitnuity Adaptive loss-vs-iterations.png"</span>)
+<span class="comment">% close(fig);</span>
+
+toc;
+
+<span class="comment">% Helper function to display and save processed images %</span>
+<span class="keyword">function</span> savefig(my_color_scale,modified_pic,title_name,file_name,is_color,to_save)
+	<span class="comment">% if to_save==1</span>
+		<span class="comment">% fig = figure('units','normalized','outerposition',[0 0 1 1]); colormap(my_color_scale);</span>
+	<span class="comment">% else</span>
+		fig = figure; colormap(my_color_scale);
+	<span class="comment">% end</span>
+
+	<span class="keyword">if</span> is_color == 1
+		colormap <span class="string">jet</span>;
+	<span class="keyword">else</span>
+		colormap(gray);
+	<span class="keyword">end</span>
+
+	imagesc(modified_pic), title(title_name), colorbar, daspect([1 1 1]), axis <span class="string">tight</span>;
+	impixelinfo();
+
+	<span class="keyword">if</span> to_save == 1
+		saveas(fig,file_name)<span class="comment">%,close(fig);</span>
+	<span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">Elapsed time is 10.829342 seconds.
+</pre><img vspace="5" hspace="5" src="myMainScript_06.png" alt=""> <img vspace="5" hspace="5" src="myMainScript_07.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% MyMainScript
+
+% Setting the color scale %
+my_num_of_colors = 256;
+col_scale =  [0:1/(my_num_of_colors-1):1]';
+my_color_scale = [col_scale,col_scale,col_scale];
+
+% Set to_save to 1, if you want to save the generated pictures %
+to_save = 1;
+is_color = 0;
+
+% Loading the pictures %
+brain_data  = load('../../data/assignmentImageDenoisingBrainNoisy.mat');
+brain_noisy = brain_data.imageNoisy;
+
+tic;
+
+%% Original Image
+savefig(my_color_scale,abs(brain_noisy),"Noisy","noisy_brain.png",is_color,to_save);
+
+%% Part a : Extracting the top 50 x 50 non overlapping portion to determine sigma level of noise
+
+brain_bg = brain_noisy(1:50,1:50);
+real_brain_bg = real(brain_bg);
+imag_brain_bg = imag(brain_bg);
+
+std_real = sqrt(var(real_brain_bg(:)));
+std_imag = sqrt(var(imag_brain_bg(:)));
+
+step_size 	= 0.005;
+max_iter	= 50;
+sig 		= mean([std_imag,std_real]);
+
+%% Part b Using all the priors along with gaussian noice likelihood%
+% We also tried using Rician which did achieve a lot of smoothing for extreme values but not for 
+% brain part
+
+%% Quadratic Prior %
+% Best Params - % alfa = 0.008
+alfa 	= 0.008;
+gam 	= 0.5; % Doesn't play a role in quadratic though
+prior = "quadratic";
+like = "gauss";
+[denoised_img_quad,loss_list] = denoiser(brain_noisy,alfa,step_size,max_iter,sig,gam,prior,like);
+savefig(my_color_scale,abs(denoised_img_quad),"Quadratic Prior Denoised","quadratic_denoised_brain.png",is_color,to_save);
+
+fig = figure;
+plot(loss_list);
+saveas(fig, "Quadratic loss-vs-iterations.png")
+% close(fig);
+
+%% Huber Prior 
+% Best Params - % alfa = 0.004; gam = 0.2;
+alfa 	= 0.004;
+gam 	= 0.2;
+prior = "huber";
+like = "gauss";
+[denoised_img_huber,loss_list] = denoiser(brain_noisy,alfa,step_size,max_iter,sig,gam,prior,like);
+savefig(my_color_scale,abs(denoised_img_huber),"Huber Prior Denoised","huber_denoised_brain.png",is_color,to_save);
+
+fig = figure;
+plot(loss_list);
+saveas(fig, "Huber loss-vs-iterations.png")
+% close(fig);
+
+%% Disconitnuity Adaptive Prior %
+% Best Params - % alfa = 0.003; gam = 0.3;
+
+alfa 		= 0.003;
+gam 		= 0.3;
+prior 		= "discon_adap";
+like = "gauss";
+[denoised_img_disc_adap,loss_list] = denoiser(brain_noisy,alfa,step_size,max_iter,sig,gam,prior,like);
+savefig(my_color_scale,abs(denoised_img_disc_adap),"Disconitnuity Adapt Prior Denoised","discon_adap_denoised_brain.png",is_color,to_save);
+
+fig = figure;
+plot(loss_list);
+saveas(fig, "Disconitnuity Adaptive loss-vs-iterations.png")
+% close(fig);
+
+toc;
+
+% Helper function to display and save processed images %
+function savefig(my_color_scale,modified_pic,title_name,file_name,is_color,to_save)
+	% if to_save==1
+		% fig = figure('units','normalized','outerposition',[0 0 1 1]); colormap(my_color_scale);
+	% else
+		fig = figure; colormap(my_color_scale);
+	% end
+
+	if is_color == 1
+		colormap jet;
+	else
+		colormap(gray);
+	end
+	
+	imagesc(modified_pic), title(title_name), colorbar, daspect([1 1 1]), axis tight;
+	impixelinfo();
+    
+	if to_save == 1
+		saveas(fig,file_name)%,close(fig);
+	end
+end
+
+##### SOURCE END #####
+--></body></html>
