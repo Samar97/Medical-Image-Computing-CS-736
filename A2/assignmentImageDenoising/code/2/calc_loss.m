@@ -1,5 +1,9 @@
-function loss = calc_loss(curr_img,data,sig,gam,prior,alfa)
-	likelihood = gauss_noise(curr_img,data,sig,0);
+function loss = calc_loss(curr_img,data,sig,gam,prior,like,alfa)
+	if strcmp(like,'gauss')
+		likelihood = gauss_noise(curr_img,data,sig,0);
+	else
+		likelihood = rician(curr_img,data,sig,alfa,0);
+	end
 	potential = 0;
 	potential_img = zeros(size(curr_img));
 	if strcmp(prior,'huber')

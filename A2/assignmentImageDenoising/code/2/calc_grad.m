@@ -1,7 +1,11 @@
-function img_gradient = calc_grad(curr_img,data,sig,gam,prior,alfa)
+function img_gradient = calc_grad(curr_img,data,sig,gam,prior,like,alfa)
 	img_gradient = zeros(size(curr_img));
 	potential_img = zeros(size(curr_img));
-	likelihood = gauss_noise(curr_img,data,sig,1);
+	if strcmp(like,'gauss')
+		likelihood = gauss_noise(curr_img,data,sig,1);
+	else
+		likelihood = rician(curr_img,data,sig,alfa,1);
+	end
 	if strcmp(prior,'huber')
 		potential_img = huber_prior(curr_img,gam,1);
 	elseif strcmp(prior,'quadratic')
