@@ -33,11 +33,11 @@ sig 		= mean([std_imag,std_real]);
 %% Part b %
 
 %% Quadratic Prior %
-% Best Params - % alfa = 0.003
-alfa 	= 0.1;
+% Best Params - % alfa = 0.008
+alfa 	= 0.008;
 gam 	= 0.5; % Doesn't play a role in quadratic though
 prior = "quadratic";
-like = "gaussian";
+like = "gauss";
 [denoised_img_quad,loss_list] = denoiser(brain_noisy,alfa,step_size,max_iter,sig,gam,prior,like);
 savefig(my_color_scale,abs(denoised_img_quad),"Quadratic Prior Denoised","quadratic_denoised_brain.png",is_color,to_save);
 % figure;
@@ -48,7 +48,7 @@ savefig(my_color_scale,abs(denoised_img_quad),"Quadratic Prior Denoised","quadra
 alfa 	= 0.004;
 gam 	= 0.2;
 prior = "huber";
-like = "gaussian";
+like = "gauss";
 [denoised_img_huber,loss_list] = denoiser(brain_noisy,alfa,step_size,max_iter,sig,gam,prior,like);
 savefig(my_color_scale,abs(denoised_img_huber),"Huber Prior Denoised","huber_denoised_brain.png",is_color,to_save);
 
@@ -60,7 +60,7 @@ savefig(my_color_scale,abs(denoised_img_huber),"Huber Prior Denoised","huber_den
 alfa 		= 0.003;
 gam 		= 0.3;
 prior 		= "discon_adap";
-like = "gaussian";
+like = "gauss";
 [denoised_img_disc_adap,loss_list] = denoiser(brain_noisy,alfa,step_size,max_iter,sig,gam,prior,like);
 savefig(my_color_scale,abs(denoised_img_disc_adap),"Disconitnuity Adapt Prior Denoised","discon_adap_denoised_brain.png",is_color,to_save);
 
