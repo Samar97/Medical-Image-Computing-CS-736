@@ -81,6 +81,10 @@ savefig(my_color_scale,inverted_image,"Best phantom reconstructed","Best_phantom
 
 toc;
 
+%% Explanation - 
+% We will acquire the range which gives the least RRMSE error as we have calculated
+
+
 % Helper function to save the figures %
 function savefig(my_color_scale,modified_pic,title_name,file_name,is_color,to_save)
 	if to_save==1

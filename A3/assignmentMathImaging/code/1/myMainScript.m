@@ -90,9 +90,21 @@ close(fig);
 
 savefig(my_color_scale,Rf,"Radon Transform del s 3","Radon_transform_3.png",is_color,to_save);
 
-
-
 toc;
+
+%% Part a 
+% Justification - 
+% We should use step size of 1, because the step size of 0.5 gives the same result and a higher step size like 3 distorts the result. 
+% So, one is an ideal tradeoff.
+% We use bilinear interpolation, that is the default choice of the interp2 function.
+% Reason - ?
+%% Part c
+% The 1D plot which appears the smoothest is delta s = 0.5 and delta s = 1 (both have the same plot and images)
+% The 1D plot which appears the roughest is delta s = 3
+% Reason - Lesser delta_s values lead to smaller steps for integration and hence more "continuity" is enforced due to the accurately calculated values. 
+% Large delta can cause discontinuities and hence less smooth.
+%% Part d
+%% Part e
 
 % Helper function to save the figures %
 function savefig(my_color_scale,modified_pic,title_name,file_name,is_color,to_save)

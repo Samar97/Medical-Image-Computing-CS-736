@@ -162,6 +162,20 @@ saveas(fig,"RRMSE_5.png");
 close(fig);
 toc;
 
+%% Explanation
+% a - For L = wmax/2 we get smoother reconstructed images as more of the higher frequency components are attenuated as compared to L = wmax
+% a - Among the filters, the cosine is the smoothest, as it attenuates the higher frequencies more and the RamLak and SheppLogan are very similar
+% b - RRMSE is the highest for the original image with sigma = 0 and decreases as sigma increases. This is because as we increase the sigma, 
+% the noise is removed and smoothed out (again higher frequencies attenuated). This results in less noise amplification in the inversion process
+% Hence the more the sigma, the closer the reconstructed image is to the original image (which is obviously smoothed btw).
+% c - For sigma = 0, 1 the RRMSE decreases with increase in L and then increases slightly. 
+% Reason - as we increase the retained frequencies we bring more and more detail, so RRMSE intially decreases, 
+% but on retaining too high frequencies, the noise also is retained, leading to higher RRMSE
+% c - For sigma = 5, the RRMSE decreases with increase in L and then sort of flattens out without increasing much.
+% Reason - In this case the image is heavily blurred to begin with, so there is not much noise which would cause the problems we were getting for the other 2 cases. 
+% Hence retaining higher frequencies only adds more detail and does not amplify noise as there was n't much to begin with.
+% In general the RRMSE values for a particular value of L decreases as we go from the sigma = 0, to sigma = 5. This is corroborated with the values in the y axes.
+
 % Helper function to save the figures %
 function savefig(my_color_scale,modified_pic,title_name,file_name,is_color,to_save)
 	if to_save==1
