@@ -6,8 +6,6 @@ function log_prior = myPrior(X, Beta, mask, X_fixed, opt)
 		X_fixed = X;
 	end
 	
-	X_fixed = X_fixed .* mask;
-
 	X_up = circshift(X_fixed,[-1,0]);
 	X_down = circshift(X_fixed,[1,0]);
 	X_left = circshift(X_fixed,[0,-1]);

@@ -2,7 +2,6 @@ function Xmap = myICM(X, image_data, K, Beta, mask, class_means, class_stds, to_
 
 	[h, w] = size(image_data);
 	Xmap = X;
-	Xmap = Xmap .* mask;
 	log_prior = myPrior(Xmap, Beta, mask, Xmap, 0);
 	log_likelihood = myLikelihood(image_data, Xmap, mask, class_means, class_stds);
 	original_log_posterior = sum(sum(log_prior + log_likelihood));
@@ -19,17 +18,12 @@ function Xmap = myICM(X, image_data, K, Beta, mask, class_means, class_stds, to_
 			log_likelihood = myLikelihood(image_data, X_k, mask, class_means, class_stds);
 			log_posterior = log_prior + log_likelihood;
 			posterior_all(:,:,k) = log_posterior;
-			posterior_all(:,:,k) = posterior_all(:,:,k) .* mask;
-
 		end
 
 		[not_needed, Xmap] = max(posterior_all, [], 3);
 		Xmap = Xmap .* mask;
 
 	end
-	
-	% imagesc(Xmap)
-	% waitforbuttonpress;
 
 	log_prior = myPrior(Xmap, Beta, mask, Xmap, 0);
 	log_likelihood = myLikelihood(image_data, Xmap, mask, class_means, class_stds);

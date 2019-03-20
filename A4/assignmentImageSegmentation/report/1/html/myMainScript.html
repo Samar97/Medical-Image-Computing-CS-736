@@ -1,0 +1,583 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>myMainScript</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-03-20"><meta name="DC.source" content="myMainScript.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">MyMainScript</a></li><li><a href="#2">Initialisation of parameters</a></li><li><a href="#3">Part a</a></li><li><a href="#4">Part b</a></li><li><a href="#5">Part c</a></li><li><a href="#6">Part d</a></li><li><a href="#7">Running modified FCM</a></li><li><a href="#8">Part e</a></li><li><a href="#9">Calculating Results</a></li><li><a href="#10">Part f</a></li><li><a href="#11">Part g</a></li></ul></div><h2 id="1">MyMainScript</h2><pre class="codeinput">clc;
+close <span class="string">all</span>;
+clear;
+warning(<span class="string">'off'</span>,<span class="string">'all'</span>);
+
+<span class="comment">% Setting the color scale %</span>
+my_num_of_colors = 256;
+col_scale =  [0:1/(my_num_of_colors-1):1]';
+my_color_scale = [col_scale,col_scale,col_scale];
+
+<span class="comment">% Set to_save to 1, if you want to save the generated pictures %</span>
+to_save  = 1;
+is_color = 1;
+
+<span class="comment">% Loading and displaying the data %</span>
+original_data = load(<span class="string">'../../data/assignmentSegmentBrain.mat'</span>);
+brain_image   = original_data.imageData;
+brain_mask    = original_data.imageMask;
+old_brain_image = brain_image;
+
+<span class="comment">% savefig(my_color_scale,brain_image,"Original Brain MRI","Original_Brain_Image.png",0,to_save);</span>
+<span class="comment">% savefig(my_color_scale,brain_mask,"Brain Mask","Brain_Mask.png",0,to_save);</span>
+
+brain_image = brain_image .* brain_mask;
+<span class="comment">% savefig(my_color_scale,brain_image,"Brain Image after applying mask","Masked_Brain.png",0,to_save);</span>
+[h, w, num_chan] = size(brain_image);
+
+tic;
+</pre><h2 id="2">Initialisation of parameters</h2><pre class="codeinput">K = 3;
+q = 1.51;
+nbr_mask = fspecial(<span class="string">'gaussian'</span>,15,4);
+class_means = zeros(K,1);
+membership = zeros(h,w,K);
+bias = ones(h,w);
+num_iter = 100;
+
+<span class="comment">% We use K+1 classes as the background is to be considered as a separate class in addition to the 3 we want to find</span>
+[idx, C] = kmeans(brain_image(:),K+1);
+idx = reshape(idx, h,w);
+
+non_background = C&gt;0.01;
+class_means = C(non_background);
+class_labels = (1:K+1);
+class_labels = class_labels(non_background);
+
+<span class="keyword">for</span> k = 1:K
+	membership(:,:,k) = idx==class_labels(k);
+	membership(:,:,k) = membership(:,:,k).*brain_mask;
+<span class="keyword">end</span>
+</pre><h2 id="3">Part a</h2><pre class="codeinput">fprintf(<span class="string">'Chosen Value of q = %f \n'</span>,q);
+</pre><pre class="codeoutput">Chosen Value of q = 1.510000 
+</pre><h2 id="4">Part b</h2><pre class="codeinput">savefig(my_color_scale,nbr_mask,<span class="string">"Neighborhood Mask"</span>,<span class="string">"Neighborhood_Mask.png"</span>,0,to_save);
+</pre><img vspace="5" hspace="5" src="myMainScript_01.png" alt=""> <h2 id="5">Part c</h2><p>We choose K Means algorithm to initialise the membership which is hard as per K Means Motivation :	We use the membership of K Means which is hard membership as the algorithm</p><pre class="codeinput"><span class="comment">%				is analytical and there is no problematic zeroing of gradients</span>
+<span class="keyword">for</span> k = 1:K
+	savefig(my_color_scale,membership(:,:,k),strcat(<span class="string">"Initial Membership for k = "</span>,num2str(k)),strcat(<span class="string">"Initial_Membership_k_"</span>,num2str(k),<span class="string">".png"</span>),0,to_save);
+<span class="keyword">end</span>
+</pre><img vspace="5" hspace="5" src="myMainScript_02.png" alt=""> <img vspace="5" hspace="5" src="myMainScript_03.png" alt=""> <img vspace="5" hspace="5" src="myMainScript_04.png" alt=""> <h2 id="6">Part d</h2><p>We choose K Means algorithm to initialise the means Motivation : As taught in class, a more rudimentary model (in our case K Means) is used for initialising              a more sophisticated and general model (in our case modified Fuzzy C Means)</p><pre class="codeinput">fprintf(<span class="string">'The initial class means : \n'</span>);
+disp(class_means);
+
+losses = zeros(num_iter,1);
+</pre><pre class="codeoutput">The initial class means : 
+    0.2525
+    0.6362
+    0.4572
+
+</pre><h2 id="7">Running modified FCM</h2><pre class="codeinput"><span class="keyword">for</span> iter = 1:num_iter
+	<span class="comment">% Finding membership</span>
+	membership = updateMembership(K, q, nbr_mask, class_means, bias, brain_image, brain_mask);
+	<span class="comment">% Finding means</span>
+	class_means = updateMeans(K, q, nbr_mask, membership, bias, brain_image);
+	<span class="comment">% Finding bias</span>
+	bias = updateBias(K, q, nbr_mask, class_means, membership, brain_image);
+
+	<span class="comment">% Finding loss</span>
+	losses(iter) = calcLoss(K, q, nbr_mask, class_means, membership, bias, brain_image);
+	disp(losses(iter));
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">   60.8511
+
+   50.3560
+
+   46.0558
+
+   43.2052
+
+   41.3103
+
+   40.1214
+
+   39.3493
+
+   38.7923
+
+   38.3548
+
+   38.0069
+
+   37.7720
+
+   37.6229
+
+   37.5152
+
+   37.4371
+
+   37.3831
+
+   37.3486
+
+   37.3289
+
+   37.3186
+
+   37.3136
+
+   37.3112
+
+   37.3101
+
+   37.3095
+
+   37.3092
+
+   37.3091
+
+   37.3091
+
+   37.3090
+
+   37.3090
+
+   37.3089
+
+   37.3089
+
+   37.3090
+
+   37.3090
+
+   37.3090
+
+   37.3090
+
+   37.3090
+
+   37.3090
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3090
+
+   37.3089
+
+   37.3090
+
+   37.3090
+
+   37.3090
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3088
+
+   37.3089
+
+   37.3088
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3088
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3088
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+   37.3089
+
+</pre><h2 id="8">Part e</h2><pre class="codeinput">fig = figure;
+plot(losses);
+xlabel(<span class="string">'Iteration no.'</span>);
+ylabel(<span class="string">'Objective function'</span>);
+title(<span class="string">"Objective Function v/s Iterations"</span>);
+saveas(fig,<span class="string">"Objective_Fuzzy.png"</span>);
+<span class="comment">% close(fig);</span>
+</pre><img vspace="5" hspace="5" src="myMainScript_05.png" alt=""> <h2 id="9">Calculating Results</h2><pre class="codeinput">[class_means, sorted_idx] = sort(class_means);
+membership_old = membership;
+membership(:,:,1) = membership_old(:,:,sorted_idx(1));
+membership(:,:,2) = membership_old(:,:,sorted_idx(3));
+membership(:,:,3) = membership_old(:,:,sorted_idx(2));
+
+<span class="comment">% for k = 1:K</span>
+<span class="comment">% 	membership(:,:,k) = membership_old(:,:,sorted_idx(k));</span>
+<span class="comment">% end</span>
+
+bias_removed_image = zeros(h, w);
+<span class="keyword">for</span> k = 1:K
+	ck = class_means(k);
+	bias_removed_image = bias_removed_image + ck * membership(:,:,k);
+<span class="keyword">end</span>
+residual_image = brain_image - bias_removed_image.*bias;
+</pre><h2 id="10">Part f</h2><pre class="codeinput">savefig(my_color_scale,old_brain_image,<span class="string">"Original Brain MRI"</span>,<span class="string">"Original_Brain_Image.png"</span>,0,to_save);
+savefig(my_color_scale,brain_mask,<span class="string">"Brain Mask"</span>,<span class="string">"Brain_Mask.png"</span>,0,to_save);
+savefig(my_color_scale,brain_image,<span class="string">"Brain Image after applying mask"</span>,<span class="string">"Masked_Brain.png"</span>,0,to_save);
+
+<span class="keyword">for</span> k = 1:K
+	savefig(my_color_scale,membership(:,:,k),strcat(<span class="string">"Optimal Membership for k = "</span>,num2str(k)),strcat(<span class="string">"Optimal_Membership_k_"</span>,num2str(k),<span class="string">".png"</span>),0,to_save);
+<span class="keyword">end</span>
+
+savefig(my_color_scale,bias,<span class="string">"Bias Field"</span>,<span class="string">"Bias_Field.png"</span>,0,to_save);
+savefig(my_color_scale,bias_removed_image,<span class="string">"Bias Removed"</span>,<span class="string">"Bias_Removed.png"</span>,0,to_save);
+savefig(my_color_scale,residual_image,<span class="string">"Residual"</span>,<span class="string">"Residual.png"</span>,0,to_save);
+</pre><img vspace="5" hspace="5" src="myMainScript_06.png" alt=""> <img vspace="5" hspace="5" src="myMainScript_07.png" alt=""> <img vspace="5" hspace="5" src="myMainScript_08.png" alt=""> <img vspace="5" hspace="5" src="myMainScript_09.png" alt=""> <img vspace="5" hspace="5" src="myMainScript_10.png" alt=""> <img vspace="5" hspace="5" src="myMainScript_11.png" alt=""> <img vspace="5" hspace="5" src="myMainScript_12.png" alt=""> <img vspace="5" hspace="5" src="myMainScript_13.png" alt=""> <img vspace="5" hspace="5" src="myMainScript_14.png" alt=""> <h2 id="11">Part g</h2><pre class="codeinput">fprintf(<span class="string">'The optimal class means : \n'</span>);
+disp(class_means);
+
+savefig(my_color_scale,membership,<span class="string">"Segmentation Map"</span>,<span class="string">"Segmentation_Map.png"</span>,0,to_save);
+
+toc;
+
+<span class="comment">% Helper function to save the figures %</span>
+<span class="keyword">function</span> savefig(my_color_scale,modified_pic,title_name,file_name,is_color,to_save)
+	<span class="keyword">if</span> to_save==1
+		fig = figure(<span class="string">'units'</span>,<span class="string">'normalized'</span>,<span class="string">'outerposition'</span>,[0 0 1 1]); colormap(my_color_scale);
+	<span class="keyword">else</span>
+		fig = figure; colormap(my_color_scale);
+	<span class="keyword">end</span>
+
+	<span class="keyword">if</span> is_color == 1
+		colormap <span class="string">jet</span>;
+	<span class="keyword">else</span>
+		colormap(gray);
+	<span class="keyword">end</span>
+
+	imagesc(modified_pic), title(title_name), colorbar, daspect([1 1 1]), axis <span class="string">tight</span>;
+	impixelinfo();
+
+	<span class="keyword">if</span> to_save == 1
+		saveas(fig,file_name);
+		<span class="comment">% close(fig);</span>
+	<span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">The optimal class means : 
+    0.2407
+    0.4703
+    0.5753
+
+Elapsed time is 96.496593 seconds.
+</pre><img vspace="5" hspace="5" src="myMainScript_15.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% MyMainScript
+clc;
+close all;
+clear;
+warning('off','all');
+
+% Setting the color scale %
+my_num_of_colors = 256;
+col_scale =  [0:1/(my_num_of_colors-1):1]';
+my_color_scale = [col_scale,col_scale,col_scale];
+
+% Set to_save to 1, if you want to save the generated pictures %
+to_save  = 1;
+is_color = 1;
+
+% Loading and displaying the data %
+original_data = load('../../data/assignmentSegmentBrain.mat');
+brain_image   = original_data.imageData;
+brain_mask    = original_data.imageMask;
+old_brain_image = brain_image;
+
+% savefig(my_color_scale,brain_image,"Original Brain MRI","Original_Brain_Image.png",0,to_save);
+% savefig(my_color_scale,brain_mask,"Brain Mask","Brain_Mask.png",0,to_save);
+
+brain_image = brain_image .* brain_mask;
+% savefig(my_color_scale,brain_image,"Brain Image after applying mask","Masked_Brain.png",0,to_save);
+[h, w, num_chan] = size(brain_image);
+
+tic;
+
+%% Initialisation of parameters
+K = 3;
+q = 1.51;
+nbr_mask = fspecial('gaussian',15,4);
+class_means = zeros(K,1);
+membership = zeros(h,w,K);
+bias = ones(h,w);
+num_iter = 100;
+
+% We use K+1 classes as the background is to be considered as a separate class in addition to the 3 we want to find
+[idx, C] = kmeans(brain_image(:),K+1);
+idx = reshape(idx, h,w);
+
+non_background = C>0.01;
+class_means = C(non_background);
+class_labels = (1:K+1);
+class_labels = class_labels(non_background);
+
+for k = 1:K
+	membership(:,:,k) = idx==class_labels(k);
+	membership(:,:,k) = membership(:,:,k).*brain_mask;
+end
+
+%% Part a
+fprintf('Chosen Value of q = %f \n',q);
+
+%% Part b
+savefig(my_color_scale,nbr_mask,"Neighborhood Mask","Neighborhood_Mask.png",0,to_save);
+
+%% Part c
+% We choose K Means algorithm to initialise the membership which is hard as per K Means
+% Motivation :	We use the membership of K Means which is hard membership as the algorithm
+%				is analytical and there is no problematic zeroing of gradients 
+for k = 1:K
+	savefig(my_color_scale,membership(:,:,k),strcat("Initial Membership for k = ",num2str(k)),strcat("Initial_Membership_k_",num2str(k),".png"),0,to_save);
+end
+
+%% Part d
+% We choose K Means algorithm to initialise the means
+% Motivation : As taught in class, a more rudimentary model (in our case K Means) is used for initialising
+%              a more sophisticated and general model (in our case modified Fuzzy C Means)
+fprintf('The initial class means : \n');
+disp(class_means);
+
+losses = zeros(num_iter,1);
+
+%% Running modified FCM
+for iter = 1:num_iter
+	% Finding membership
+	membership = updateMembership(K, q, nbr_mask, class_means, bias, brain_image, brain_mask);
+	% Finding means
+	class_means = updateMeans(K, q, nbr_mask, membership, bias, brain_image);
+	% Finding bias
+	bias = updateBias(K, q, nbr_mask, class_means, membership, brain_image);
+
+	% Finding loss
+	losses(iter) = calcLoss(K, q, nbr_mask, class_means, membership, bias, brain_image);
+	disp(losses(iter));
+end
+
+%% Part e
+
+fig = figure;
+plot(losses);
+xlabel('Iteration no.');
+ylabel('Objective function');
+title("Objective Function v/s Iterations");
+saveas(fig,"Objective_Fuzzy.png");
+% close(fig);
+
+
+%% Calculating Results
+[class_means, sorted_idx] = sort(class_means);
+membership_old = membership;
+membership(:,:,1) = membership_old(:,:,sorted_idx(1));
+membership(:,:,2) = membership_old(:,:,sorted_idx(3));
+membership(:,:,3) = membership_old(:,:,sorted_idx(2));
+
+% for k = 1:K
+% 	membership(:,:,k) = membership_old(:,:,sorted_idx(k));
+% end
+
+bias_removed_image = zeros(h, w);
+for k = 1:K
+	ck = class_means(k);
+	bias_removed_image = bias_removed_image + ck * membership(:,:,k);
+end
+residual_image = brain_image - bias_removed_image.*bias;
+
+
+
+%% Part f
+savefig(my_color_scale,old_brain_image,"Original Brain MRI","Original_Brain_Image.png",0,to_save);
+savefig(my_color_scale,brain_mask,"Brain Mask","Brain_Mask.png",0,to_save);
+savefig(my_color_scale,brain_image,"Brain Image after applying mask","Masked_Brain.png",0,to_save);
+
+for k = 1:K
+	savefig(my_color_scale,membership(:,:,k),strcat("Optimal Membership for k = ",num2str(k)),strcat("Optimal_Membership_k_",num2str(k),".png"),0,to_save);
+end
+
+savefig(my_color_scale,bias,"Bias Field","Bias_Field.png",0,to_save);
+savefig(my_color_scale,bias_removed_image,"Bias Removed","Bias_Removed.png",0,to_save);
+savefig(my_color_scale,residual_image,"Residual","Residual.png",0,to_save);
+
+%% Part g
+fprintf('The optimal class means : \n');
+disp(class_means);
+
+savefig(my_color_scale,membership,"Segmentation Map","Segmentation_Map.png",0,to_save);
+
+toc;
+
+% Helper function to save the figures %
+function savefig(my_color_scale,modified_pic,title_name,file_name,is_color,to_save)
+	if to_save==1
+		fig = figure('units','normalized','outerposition',[0 0 1 1]); colormap(my_color_scale);
+	else
+		fig = figure; colormap(my_color_scale);
+	end
+
+	if is_color == 1
+		colormap jet;
+	else
+		colormap(gray);
+	end
+	
+	imagesc(modified_pic), title(title_name), colorbar, daspect([1 1 1]), axis tight;
+	impixelinfo();
+	
+	if to_save == 1
+		saveas(fig,file_name);
+		% close(fig);
+	end
+end
+
+##### SOURCE END #####
+--></body></html>

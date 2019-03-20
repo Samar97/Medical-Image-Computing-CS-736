@@ -79,7 +79,7 @@ disp(class_stds);
 for iter = 1:num_iter
 	
 	% Finding membership in E step
-	membership = myEStep(X, brain_image, K, Beta, brain_mask, class_means, class_stds, true);
+	[X, membership] = myEStep(X, brain_image, K, Beta, brain_mask, class_means, class_stds, true);
 	
 	% Finding means and stds in M step
 	[class_means, class_stds] = myMStep(K, membership, brain_image, class_means, brain_mask);
@@ -95,37 +95,64 @@ membership(:,:,1) = membership_old(:,:,sorted_idx(1));
 membership(:,:,2) = membership_old(:,:,sorted_idx(3));
 membership(:,:,3) = membership_old(:,:,sorted_idx(2));
 
-% for k = 1:K
-% 	membership(:,:,k) = membership_old(:,:,sorted_idx(k));
-% end
+opt_class_means = class_means;
 
-% bias_removed_image = zeros(h, w);
-% for k = 1:K
-% 	ck = class_means(k);
-% 	bias_removed_image = bias_removed_image + ck * membership(:,:,k);
-% end
-% residual_image = brain_image - bias_removed_image.*bias;
+savefig(my_color_scale,brain_image,"Original Corrupted Image with Mask","Original_Brain_Image_masked.png",0,to_save);
+savefig(my_color_scale,membership,strcat("Optimal Class Membership, Chosen Beta = ", num2str(Beta)),"Optimal_Class_Membership_Chosen_Beta.png",0,to_save);
+savefig(my_color_scale,X,strcat("Optimal Label Image for chosen Beta = ", num2str(Beta)),"Optimal_Label_Image_for_chosen_Beta.png",0,to_save);
 
+%% Running for Beta = 0
+K = 3;
+Beta = 0;
+class_means = zeros(K,1);
+class_stds = zeros(K,1);
+membership = zeros(h,w,K);
+X = ones(h,w);
+num_iter = 100;
 
+% We use K+1 classes as the background is to be considered as a separate class in addition to the 3 we want to find
+[label, C] = kmeans(brain_image(:),K+1);
+label = reshape(label, h,w);
+X = label;
+[C, idx] = sort(C);
+for k=1:K+1
+	X(label == idx(k)) = k-1;
+end
+
+X (brain_mask==1 & X == 0) = 1;
+
+for k=1:K
+	points_k = X==k;
+	class_means(k) = mean(brain_image(points_k));
+	class_stds(k)  = std(brain_image(points_k));
+end
+
+fprintf('Beta = %f \n',Beta);
+
+%% Running modified EM for Beta = 0
+for iter = 1:num_iter
+	
+	% Finding membership in E step
+	[X, membership] = myEStep(X, brain_image, K, Beta, brain_mask, class_means, class_stds, true);
+	
+	% Finding means and stds in M step
+	[class_means, class_stds] = myMStep(K, membership, brain_image, class_means, brain_mask);
+	
+end
+
+%% Calculating Results for Beta = 0
+[class_means, sorted_idx] = sort(class_means);
+membership_old = membership;
+membership(:,:,1) = membership_old(:,:,sorted_idx(1));
+membership(:,:,2) = membership_old(:,:,sorted_idx(3));
+membership(:,:,3) = membership_old(:,:,sorted_idx(2));
+
+savefig(my_color_scale,membership,strcat("Optimal Class Membership, Beta = ", num2str(Beta)),"Optimal_Class_Membership_Beta_0.png",0,to_save);
+savefig(my_color_scale,X,strcat("Optimal Label Image for Beta = ", num2str(Beta)),"Optimal_Label_Image_for_Beta_0.png",0,to_save);
 
 %% Part f
-% savefig(my_color_scale,old_brain_image,"Original Brain MRI","Original_Brain_Image.png",0,to_save);
-% savefig(my_color_scale,brain_mask,"Brain Mask","Brain_Mask.png",0,to_save);
-% savefig(my_color_scale,brain_image,"Brain Image after applying mask","Masked_Brain.png",0,to_save);
-
-% for k = 1:K
-% 	savefig(my_color_scale,membership(:,:,k),strcat("Optimal Membership for k = ",num2str(k)),strcat("Optimal_Membership_k_",num2str(k),".png"),0,to_save);
-% end
-
-% savefig(my_color_scale,bias,"Bias Field","Bias_Field.png",0,to_save);
-% savefig(my_color_scale,bias_removed_image,"Bias Removed","Bias_Removed.png",0,to_save);
-% savefig(my_color_scale,residual_image,"Residual","Residual.png",0,to_save);
-
-%% Part g
-fprintf('The optimal class means : \n');
-disp(class_means);
-
-savefig(my_color_scale,membership,"Segmentation Map","Segmentation_Map.png",0,to_save);
+fprintf('The optimal class means for chosen Beta: \n');
+disp(opt_class_means);
 
 toc;
 
@@ -147,6 +174,7 @@ function savefig(my_color_scale,modified_pic,title_name,file_name,is_color,to_sa
 	impixelinfo();
 	
 	if to_save == 1
-		saveas(fig,file_name),close(fig);
+		saveas(fig,file_name);
+		% close(fig);
 	end
 end

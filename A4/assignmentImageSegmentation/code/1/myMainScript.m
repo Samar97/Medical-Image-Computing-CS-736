@@ -96,7 +96,7 @@ xlabel('Iteration no.');
 ylabel('Objective function');
 title("Objective Function v/s Iterations");
 saveas(fig,"Objective_Fuzzy.png");
-close(fig);
+% close(fig);
 
 
 %% Calculating Results
@@ -158,6 +158,7 @@ function savefig(my_color_scale,modified_pic,title_name,file_name,is_color,to_sa
 	impixelinfo();
 	
 	if to_save == 1
-		saveas(fig,file_name),close(fig);
+		saveas(fig,file_name);
+		% close(fig);
 	end
 end
